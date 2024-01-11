@@ -1,0 +1,18 @@
+{
+  "name": "thls-seo",
+  "version": "1.0.4",
+  "description": "puppeteer script to clcik on links of specify website in google search and icrese the ctr of the website",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TheLoloS",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^21.6.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  }
+}

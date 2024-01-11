@@ -1,0 +1,10 @@
+{
+  "instances": 5,
+  "targets": [
+    {
+      "url": "https://www.google.com/search?q=site%3Astawiarski.pl&oq=&gs_lcrp=EgZjaHJvbWUqCQgCECMYJxjqAjIJCAAQIxgnGOoCMgkIARAjGCcY6gIyCQgCECMYJxjqAjIJCAMQIxgnGOoCMgkIBBAjGCcY6gIyCQgFECMYJxjqAjIJCAYQIxgnGOoCMgkIBxAjGCcY6gLSAQkyMjAwajBqMTWoAgiwAgE&sourceid=chrome&ie=UTF-8",
+      "time": 5000,
+      "count": 61
+    }
+  ]
+}
