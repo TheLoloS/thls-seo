@@ -1,12 +1,21 @@
 {
   "name": "thls-seo",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "puppeteer script to clcik on links of specify website in google search and icrese the ctr of the website",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-win": "pkg index.js --target node18-win-x64  --out-path ./build --public --debug  --config ./package.json",
+    "release": "powershell -ExecutionPolicy Bypass -File .\\create-release.ps1",
+    "updatex": "npm version patch",
+    "updatexx": "npm version minor",
+    "updatexxx": "npm version major"
+  },
+  "pkg": {
+    "targets": [
+      "node18-win-x64"
+    ],
+    "assets": "node_modules/**/*.*"
   },
   "author": "TheLoloS",
   "license": "ISC",
