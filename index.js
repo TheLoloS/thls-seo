@@ -1,12 +1,14 @@
+// ! trzeba dodać restartowanie przeglądarki po błedach i opcje losowania np 40 przycisków
+
 const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-const readline = require('readline');
+const readline = require("readline");
 
 const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
+	input: process.stdin,
+	output: process.stdout,
 });
 
 let startGoogleResult = 0;
@@ -28,11 +30,9 @@ console.log(`📌 Licencja: MIT`);
 console.log(`📌 Strona: https://thls.pl/`);
 console.log(`📌 Miłego korzystania!`);
 
-
-let counter = 0;
-let clickedCounter = [];
+let site = " qaarrrtryu=stawiarski.pl";
+let instances = 1;
 const pathToUrbanVpn = path.join(process.cwd(), "urban-vpn");
-const config = JSON.parse(fs.readFileSync("./config.json"));
 const getActualTime = () => {
 	const date = new Date().toLocaleString("pl-PL", {
 		timeZone: "Europe/Warsaw",
@@ -50,76 +50,74 @@ const chromePath = path.join(
 	"chrome.exe",
 );
 
-
 puppeteer.use(StealthPlugin());
-const { instances, targets } = config;
 
-async function bot() {
+async function bot(i) {
 	console.log(" ");
-console.log(
-	(() => {
-		const date = new Date().toLocaleString("pl-PL", {
-			timeZone: "Europe/Warsaw",
-		});
-		const [day, time] = date.split(", ");
-		return `[${time}]`;
-	})(),
-	`⚡: Wczytywanie...`,
-);
-if (config) {
-	console.log(getActualTime(), "⚡: Załadowano plik konfiguracyjny");
-} else {
-	console.log(getActualTime(), "⚡: Nie można załadować pliku konfiguracyjnego");
-	process.exit(0);
-}
-	for (const target of targets) {
-		let views = 0;
-		let serverIndex = 42;
-
-		for (let i = 0; i < instances; i++) {
-			const browser = await puppeteer.launch({
-				headless: false, // Change to true if needed for production
-				executablePath: chromePath,
-				caches: false,
-				args: [
-					`--disable-extensions-except=${pathToUrbanVpn}`,
-					`--load-extension=${pathToUrbanVpn}`,
-				],
+	console.log(
+		(() => {
+			const date = new Date().toLocaleString("pl-PL", {
+				timeZone: "Europe/Warsaw",
 			});
+			const [day, time] = date.split(", ");
+			return `[${time}]`;
+		})(),
+		`⚡: Wczytywanie...`,
+	);
+	// if (config) {
+	// 	console.log(getActualTime(), "⚡: Załadowano plik konfiguracyjny");
+	// } else {
+	// 	console.log(getActualTime(), "⚡: Nie można załadować pliku konfiguracyjnego");
+	// 	process.exit(0);
+	// }
+	// for (let i = 0; i < instances; i++) {
+	let serverIndex = 42;
 
-			console.log(getActualTime(), `⚡: Otwieranie przeglądarki nr: ${i}`);
-			const [extPage, shuffle] = await urbanVPN(browser, i, serverIndex);
-			console.log(
-				getActualTime(),
-				`⚡: Czyszczecznie ciasteczek i cachu przeglądarki ${i}`,
-			);
-			await extPage.deleteCookie();
-			await extPage.setCacheEnabled(false);
-			
+	// for (let i = 0; i < instances; i++) {
+	const browser = await puppeteer.launch({
+		headless: false, // Change to true if needed for production
+		executablePath: chromePath,
+		caches: false,
+		args: [
+			`--disable-extensions-except=${pathToUrbanVpn}`,
+			`--load-extension=${pathToUrbanVpn}`,
+		],
+	});
 
-			for (views; views < target.count; views++) {
-				try {
-					await visit(extPage, browser, i, target);
-					await shuffle();
-					console.log(getActualTime(), `⚡: Zmiana serwera [${i}]`);
-				} catch (error) {
-					console.error(getActualTime(), "⚡: wystąpił błąd bot > for", error);
-					break; // Exit loop on error
-				}
-			}
-
+	console.log(getActualTime(), `⚡: Otwieranie przeglądarki [${i}]`);
+	const [extPage] = await urbanVPN(browser, i, serverIndex);
+	console.log(
+		getActualTime(),
+		`⚡: Czyszczecznie ciasteczek i cachu przeglądarki [${i}]`,
+	);
+	await extPage.deleteCookie();
+	await extPage.setCacheEnabled(false);
+		try {
+			await visit(extPage, browser, i, site);
 			await browser.close();
+			console.log(getActualTime(), `⚡: Zamykanie przeglądarki [${i}]`);
+			bot(i);
+		} catch (error) {
+			console.error(getActualTime(), "⚡: wystąpił błąd bot > for", error);
+			await browser.close();
+			bot(i);
 		}
-	}
 	console.log(getActualTime(), "⚡: Zakońcono");
-	bot();
+
 }
 
 async function visit(page, browser, instanceIndex, target) {
+	let counter = 0;
+let clickedCounter = [];
 	try {
-		await page.goto(target.url + `&num=100&start=${startGoogleResult}`, {
-			timeout: 5000,
-		});
+		await page.goto(
+			"https://www.google.com/search?q=site%3A" +
+				site +
+				`&num=100&start=${startGoogleResult}`,
+			{
+				timeout: 5000,
+			},
+		);
 		await page
 			.waitForSelector("#L2AGLb")
 			.then((e) => e.click())
@@ -166,29 +164,8 @@ async function visit(page, browser, instanceIndex, target) {
 			const elements = await page.$$(
 				"div > div > div > div > div > div > div > span > a",
 			);
-			// try {
-			//   const agreeButton = await page.$("#L2AGLb");
-			//   if (agreeButton) {
-			//     await agreeButton.click();
-			//   }
-			// } catch (error) {
-			//   console.error(getActualTime(),`⚡: Nie wykryto przycisku zgody (to jest OK)`);
-			// }
-
 			// Sprawdź czy indeks mieści się w zakresie
 			if (counter >= 0 && counter < elements.length) {
-				// await page.evaluate(() => {
-				//   try {
-
-				//     const elem = document.querySelector("a.T7sFge.sW9g3e.VknLRd");
-				//     const elemAvabile = elem.getAttribute("style").includes(1);
-				//     if (elemAvabile) {
-				//       elem.click();
-				//     }
-				//   }catch(error){
-				//     console.log("⚡: Wystąpił błąd w page.evaluate > clickLink", error);
-				//   }
-				// });
 				const getUniqueRandomIntFromElements = () => {
 					const randomInt = Math.floor(Math.random() * elements.length);
 					if (clickedCounter.includes(randomInt)) {
@@ -198,17 +175,6 @@ async function visit(page, browser, instanceIndex, target) {
 					return randomInt;
 				};
 				const randomInt = getUniqueRandomIntFromElements();
-				// scrollIntoView - przewiń do elementu, jeśli jest poza widokiem
-
-				// jeżeli przycisk zawiera klase GS5rRd nie wykonuj dalszego kodu
-				// console.log(elements[randomInt], randomInt);
-				// console.table(elements);
-				// const isButton = await elements[randomInt].getProperty("class");
-
-				// if (isButton === "GS5rRd") {
-				//   throw new Error("Button");
-				// }
-
 				// jeżeli element da sie kliknąć to kliknij go w przeciwnym wypadku wywołaj ponownie funkcje
 				await elements[randomInt].scrollIntoView();
 				await elements[randomInt].click();
@@ -272,9 +238,7 @@ async function visit(page, browser, instanceIndex, target) {
 			// Tutaj możesz wykonać dodatkowe operacje na nowo załadowanej stronie
 			// np. pobieranie danych, zamykanie strony itp.
 			if (counter >= target.count) {
-				await page.close();
 				return;
-				
 			}
 			counter++;
 			// console.log(counter);
@@ -282,11 +246,84 @@ async function visit(page, browser, instanceIndex, target) {
 		}
 	}
 }
-rl.question('📌 Naciśnij Enter, aby uruchomić program... 🎉', (answer) => {
-	bot().then(() => {
-		process.exit(0);
+const questionForSite = () => {
+	return new Promise((resolve, reject) => {
+		console.log(`📌 Podaj numer strony: `);
+		console.log(`📌 1. stawiarski.pl`);
+		console.log(`📌 2. stawiarski.com.pl`);
+		console.log(`📌 3. opiniesadowe.pl`);
+		console.log(`📌 4. bieglyrzeczoznawca.pl`);
+		rl.question("📌: ", (answer) => {
+			switch (answer) {
+				case "1":
+					site = "stawiarski.pl";
+					break;
+				case "2":
+					site = "stawiarski.com.pl";
+					break;
+				case "3":
+					site = "opiniesadowe.pl";
+					break;
+				case "4":
+					site = "bieglyrzeczoznawca.pl";
+					break;
+				default:
+					console.log(`📌 Podano błedne dane. Wybieram 1 opcje.`);
+					site = "stawiarski.pl";
+			}
+			resolve();
+		});
 	});
+};
+
+const questionForInstance = () => {
+	return new Promise((resolve, reject) => {
+		console.log(`📌 Podaj ilość instancji: `);
+		rl.question("📌: ", (answer) => {
+			if (answer == 0) {
+				console.log(`📌 Nie można wykonać 0 instancji, wybieranie 1`);
+				instances = 1;
+			}
+			if (answer < 0) {
+				console.log(`📌 Nie można wykonać mniej niż 0 instancji, wybieranie 1`);
+				instances = 1;
+			}
+			if (answer == "") {
+				console.log(`📌 Nie można wykonać pustych instancji, wybieranie 1`);
+				instances = 1;
+			}
+			instances = Number(answer);
+			resolve();
+		});
+	});
+};
+
+
+
+// uruchomienie botów
+const runBotsConcurrently = async () => {
+	await questionForSite();
+	await questionForInstance();
+    console.log(`📌 Strona: ${site}`);
+	console.log(`📌 Ilość instancji: ${instances}`);
+    // Promises array to store promises for each bot instance
+    const botPromises = [];
+	
+    // Iterate over the range of instances (0 to 4) and create promises for each bot
+    Array.from({ length: Number(instances) }).forEach(async (_, i) => {
+        botPromises.push(bot(i));
+    });
+	
+    // Wait for all promises to resolve
+    await Promise.all(botPromises);
+};
+
+// inicjalizacja botów
+runBotsConcurrently().then(() => {
+    process.exit(0);
 });
+
+
 
 // Urban VPN
 async function urbanVPN(browser, instanceIndex, serverIndex) {
@@ -336,7 +373,10 @@ async function urbanVPN(browser, instanceIndex, serverIndex) {
 		await new Promise((r) => setTimeout(r, 100));
 
 		async function shuffle() {
-			console.log(getActualTime(), "⚡: Konfiguracja VPN oraz pobieranie nowego IP");
+			console.log(
+				getActualTime(),
+				"⚡: Konfiguracja VPN oraz pobieranie nowego IP",
+			);
 			await extPage
 				.waitForSelector(selectSelector, { visible: true })
 				.then((el) => el.click());
@@ -369,13 +409,7 @@ async function urbanVPN(browser, instanceIndex, serverIndex) {
 						})
 							.then((response) => response.json())
 							.then((result) =>
-
-								console.warn(
-									"Ip: " +
-										result.ip +
-										" Kraj: " +
-										result.country,
-								),
+								console.warn("Ip: " + result.ip + " Kraj: " + result.country),
 							)
 							.catch((error) => console.warn("error", error));
 					});
