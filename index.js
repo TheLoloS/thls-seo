@@ -135,7 +135,17 @@ let clickedCounter = [];
 		// } catch (error) {
 		//   console.error(getActualTime(),`⚡: Nie wykryto przycisku zgody (to jest OK)`);
 		// }
-		await clickLink(page);
+
+		// generuje losowa liczbe od 10 do 40 chyba że strona ma mniej elementów
+		const elements = await page.$$(
+			"div > div > div > div > div > div > div > span > a",
+		);
+		const views = elements.length < 60 
+		? Math.floor(Math.random() * elements.length) + 5 
+		 : Math.floor(Math.random() * 60) + 5;
+		console.log(getActualTime(), `⚡: [${instanceIndex}] Generuje ${views} wizyt`);
+
+		await clickLink(page, views);
 		console.log(
 			getActualTime(),
 			`⚡: [${instanceIndex}] Generated ${views + 1} visits.`,
@@ -152,9 +162,10 @@ let clickedCounter = [];
 	//  console.log(`[${instanceIndex}] Closing page`);
 	//   counter = 0;
 	//   clickedCounter = [];
-	//   await page.close();
+	//   await browser.close();
+
 	// }
-	async function clickLink(page) {
+	async function clickLink(page, count) {
 		console.log(
 			getActualTime(),
 			`⚡: counter: ${counter}, clickedCounter: ${clickedCounter.length}`,
@@ -237,12 +248,13 @@ let clickedCounter = [];
 			// await client.send('Network.clearBrowserCookies');
 			// Tutaj możesz wykonać dodatkowe operacje na nowo załadowanej stronie
 			// np. pobieranie danych, zamykanie strony itp.
-			if (counter >= target.count) {
+			console.log(counter, count)
+			if (counter >= count) {
 				return;
 			}
 			counter++;
 			// console.log(counter);
-			await clickLink(page);
+			await clickLink(page, count);
 		}
 	}
 }
@@ -319,9 +331,7 @@ const runBotsConcurrently = async () => {
 };
 
 // inicjalizacja botów
-runBotsConcurrently().then(() => {
-    process.exit(0);
-});
+runBotsConcurrently();
 
 
 
