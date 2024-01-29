@@ -7,12 +7,12 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const readline = require("readline");
 
-async function c(time, string){
-console.log(time, string ? string : "")
-// save log to file
-fs.appendFileSync('log.txt', string + "\n", function (err) {
-	if (err) throw err;
-});
+async function c(time, string) {
+	console.log(time, string ? string : "");
+	// save log to file
+	fs.appendFileSync("log.txt", string + "\n", function (err) {
+		if (err) throw err;
+	});
 }
 
 const rl = readline.createInterface({
@@ -95,10 +95,7 @@ async function bot(i) {
 
 	c(getActualTime(), `Otwieranie przeglądarki [${i}]`);
 	const [extPage] = await urbanVPN(browser, i, serverIndex);
-	c(
-		getActualTime(),
-		`Czyszczecznie ciasteczek i cachu przeglądarki [${i}]`,
-	);
+	c(getActualTime(), `Czyszczecznie ciasteczek i cachu przeglądarki [${i}]`);
 	await extPage.deleteCookie();
 	await extPage.setCacheEnabled(false);
 	try {
@@ -130,10 +127,7 @@ async function visit(page, browser, instanceIndex, target) {
 			.waitForSelector("#L2AGLb")
 			.then((e) => e.click())
 			.catch((e) =>
-				c(
-					getActualTime(),
-					`Nie wykryto przycisku zgody (to jest OK)`,
-				),
+				c(getActualTime(), `Nie wykryto przycisku zgody (to jest OK)`),
 			);
 		// try {
 		//   const agreeButton = await page.$("#L2AGLb");
@@ -152,16 +146,10 @@ async function visit(page, browser, instanceIndex, target) {
 			elements.length < 60
 				? Math.floor(Math.random() * elements.length) + 5
 				: Math.floor(Math.random() * 60) + 5;
-		c(
-			getActualTime(),
-			`[${instanceIndex}] Generuje ${views} wizyt`,
-		);
+		c(getActualTime(), `[${instanceIndex}] Generuje ${views} wizyt`);
 
 		await clickLink(page, views);
-		c(
-			getActualTime(),
-			`[${instanceIndex}] Generated ${views + 1} visits.`,
-		);
+		c(getActualTime(), `[${instanceIndex}] Generated ${views + 1} visits.`);
 	} catch (error) {
 		console.error(getActualTime(), "wystąpił błąd w visit", error);
 		//  ! Bug
@@ -209,16 +197,19 @@ async function visit(page, browser, instanceIndex, target) {
 
 				await page.evaluate(async () => {
 					const elements = document.querySelectorAll("a");
+
 					const filterdElements = Array.from(elements).filter((link) =>
 						link.getAttribute("href").includes("https://stawiarski.pl"),
 					);
+
 					const randomButtonInt = Math.floor(
 						Math.random() * filterdElements.length,
 					);
-					c(filterdElements[randomButtonInt], randomButtonInt);
+
 					filterdElements[randomButtonInt].scrollIntoView({
 						behavior: "smooth",
 					});
+
 					await new Promise(function (resolve) {
 						setTimeout(resolve, 1000);
 					});
@@ -392,10 +383,7 @@ async function urbanVPN(browser, instanceIndex, serverIndex) {
 		await new Promise((r) => setTimeout(r, 100));
 
 		async function shuffle() {
-			c(
-				getActualTime(),
-				"Konfiguracja VPN oraz pobieranie nowego IP",
-			);
+			c(getActualTime(), "Konfiguracja VPN oraz pobieranie nowego IP");
 			await extPage
 				.waitForSelector(selectSelector, { visible: true })
 				.then((el) => el.click());
@@ -450,9 +438,6 @@ async function urbanVPN(browser, instanceIndex, serverIndex) {
 		await shuffle();
 		return [extPage, shuffle];
 	} catch (error) {
-		console.error(
-			getActualTime(),
-			`Error: w funkcji shuffle wystąpił błąd`,
-		);
+		console.error(getActualTime(), `Error: w funkcji shuffle wystąpił błąd`);
 	}
 }
