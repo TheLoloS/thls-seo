@@ -1,11 +1,17 @@
-// ! trzeba dodać restartowanie przeglądarki po błedach i opcje losowania np 40 przycisków
-
-const { Console } = require("console");
 const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const readline = require("readline");
+const config = JSON.parse(fs.readFileSync("./config.json"));
+if (!config) {
+	c(`Nie można załadować pliku konfiguracyjnego`);
+	process.exit(0);
+}else{
+	c(`Załadowano plik konfiguracyjny`);
+}
+const siteUrlTakenFromConfig = config.siteUrlForSiteSearch;
+
 
 async function c(time, string) {
 	console.log(time, string ? string : "");
@@ -39,9 +45,9 @@ c(`$ Licencja: MIT`);
 c(`$ Strona: https://thls.pl/`);
 c(`$ Miłego korzystania!`);
 
-let site = "stawiarski.pl";
+let site = siteUrlTakenFromConfig;
 let instances = 1;
-const pathToUrbanVpn = path.join(process.cwd(), "urban-vpn");
+//! const pathToUrbanVpn = path.join(process.cwd(), "urban-vpn");
 const getActualTime = () => {
 	const date = new Date().toLocaleString("pl-PL", {
 		timeZone: "Europe/Warsaw",
@@ -88,14 +94,15 @@ async function bot(i) {
 		executablePath: chromePath,
 		caches: false,
 		args: [
-			`--disable-extensions-except=${pathToUrbanVpn}`,
-			`--load-extension=${pathToUrbanVpn}`,
+			//! `--disable-extensions-except=${pathToUrbanVpn}`,
+			//! `--load-extension=${pathToUrbanVpn}`,
 		],
 	});
 
 	c(getActualTime(), `Otwieranie przeglądarki [${i}]`);
-	const [extPage] = await urbanVPN(browser, i, serverIndex);
+	//! const [extPage] = await urbanVPN(browser, i, serverIndex);
 	c(getActualTime(), `Czyszczecznie ciasteczek i cachu przeglądarki [${i}]`);
+	const extPage = await browser.newPage();
 	await extPage.deleteCookie();
 	await extPage.setCacheEnabled(false);
 	try {
@@ -316,8 +323,8 @@ const questionForInstance = () => {
 
 // uruchomienie botów
 const runBotsConcurrently = async () => {
-	await questionForSite();
-	await questionForInstance();
+	// await questionForSite();
+	// await questionForInstance();
 	c(`○ Strona: ${site}`);
 	c(`○ Ilość instancji: ${instances}`);
 	// Promises array to store promises for each bot instance
