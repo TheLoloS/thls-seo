@@ -1,10 +1,20 @@
 {
-  "instances": 2,
-  "targets": [
-    {
-      "url": "https://www.google.com/search?q=site%3Astawiarski.pl",
-      "time": 5000,
-      "count": 61
-    }
-  ]
+  "queryValues": [
+      "rzeczoznawca budowlany",
+      "ekspertyza budowlana",
+      "ekspertyzy budowlane",
+      "Rzeczoznawca budowlany Warszawa",
+      "Rzeczoznawca budowlany Wrocław",
+      "Rzeczoznawca budowlany Gdańsk",
+      "Rzeczoznawca budowlany Szczecin",
+      "Rzeczoznawca budowlany Kraków",
+      "Rzeczoznawca budowlany Poznań"
+  ],
+  "myDomains": [
+      "stawiarski.pl",
+      "stawiarski.com.pl",
+      "opiniesadowe.pl",
+      "bieglyrzeczoznawca.pl"
+  ],
+  "siteUrlForSiteSearch": "stawiarski.pl"
 }
